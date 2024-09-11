@@ -1,0 +1,7 @@
+[theme]
+primaryColor = "#FFCBA4"        # Peach Orange
+backgroundColor = "#FFF5E1"     # Light Beige
+secondaryBackgroundColor = "#FFD7C2"  # Light Coral
+textColor = "#333333"           # Charcoal
+accentColor = "#4C9F70"         # Teal (for buttons and highlights)
+font = "sans serif"

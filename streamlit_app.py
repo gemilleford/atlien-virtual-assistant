@@ -2,11 +2,11 @@ import streamlit as st
 from openai import OpenAI
 
 # Show title and description.
-st.title("💬 Chatbot")
+st.title("🍑 ATLien Assistant")
 st.write(
-    "This is a simple chatbot that uses OpenAI's GPT-3.5 model to generate responses. "
-    "To use this app, you need to provide an OpenAI API key, which you can get [here](https://platform.openai.com/account/api-keys). "
-    "You can also learn how to build this app step by step by [following our tutorial](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps)."
+    "Welcome to ATLien Assistant, an AI-powered virtual assistant designed to help newcomers and residents navigate the vibrant city of Atlanta. "
+    "Whether you're searching for the best neighborhoods, local hotspots, or upcoming events, ATLien Assistant provides personalized insights and real-time information. "
+    "With deep knowledge of the city’s culture, lifestyle, and opportunities, this assistant will guide you through everything from finding great restaurants to understanding transportation options—all at your fingertips."
 )
 
 # Ask user for their OpenAI API key via `st.text_input`.
