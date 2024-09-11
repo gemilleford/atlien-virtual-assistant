@@ -1,5 +1,6 @@
 import streamlit as st
-from openai import OpenAI
+import asyncio
+from promptflow.core import AsyncFlow
 
 # Show title and description.
 st.title("🍑 ATLien Assistant")
@@ -10,20 +11,18 @@ st.write(
 )
 
 # Ask user for their OpenAI API key via `st.text_input`.
-# Alternatively, you can store the API key in `./.streamlit/secrets.toml` and access it
-# via `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
 openai_api_key = st.text_input("OpenAI API Key", type="password")
 if not openai_api_key:
     st.info("Please add your OpenAI API key to continue.", icon="🗝️")
 else:
+    # Load the PromptFlow AsyncFlow object
+    flow = AsyncFlow.load(source="./my_chatbot/flow.dag.yaml")
 
-    # Create an OpenAI client.
-    client = OpenAI(api_key=openai_api_key)
-
-    # Create a session state variable to store the chat messages. This ensures that the
-    # messages persist across reruns.
+    # Create a session state variable to store the chat messages and chat history
     if "messages" not in st.session_state:
         st.session_state.messages = []
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
 
     # Display the existing chat messages via `st.chat_message`.
     for message in st.session_state.messages:
@@ -36,21 +35,32 @@ else:
 
         # Store and display the current prompt.
         st.session_state.messages.append({"role": "user", "content": prompt})
+        st.session_state.chat_history.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        # Generate a response using the OpenAI API.
-        stream = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": m["role"], "content": m["content"]}
-                for m in st.session_state.messages
-            ],
-            stream=True,
-        )
+        # Define an async function to run the flow and retrieve the actual answer
+        async def run_flow():
+            # Call the flow and capture the async generator
+            result = await flow(
+                chat_history=st.session_state.chat_history,  # Pass chat history
+                question=prompt  # Pass the user input
+            )
+            
+            # Iterate over the async generator to retrieve the final response
+            response = ""
+            async for res in result['answer']:
+                response += res
+            return response
 
-        # Stream the response to the chat using `st.write_stream`, then store it in 
-        # session state.
-        with st.chat_message("assistant"):
-            response = st.write_stream(stream)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        # Run the async flow function
+        final_result = asyncio.run(run_flow())
+
+        # Display and store the assistant's response in session state
+        if final_result:
+            st.session_state.messages.append({"role": "assistant", "content": final_result})
+            st.session_state.chat_history.append({"role": "assistant", "content": final_result})
+            with st.chat_message("assistant"):
+                st.markdown(final_result)
+        else:
+            st.error("No response received from the flow.")
