@@ -3,9 +3,13 @@ import asyncio
 import os
 import nest_asyncio
 from promptflow.core import AsyncFlow
+from better_profanity import profanity  # Importing profanity filter
 
 # Apply nest_asyncio to allow nested event loops
 nest_asyncio.apply()
+
+# Initialize the better-profanity filter
+profanity.load_censor_words()
 
 # Load and parse the knowledge base (all files in the 'data' directory)
 def load_knowledge_base(directory_path):
@@ -82,17 +86,33 @@ async def run_flow(flow, prompt):
             response += res
     return response
 
+def moderate_user_input(user_input):
+    """Moderate input for profanity using better-profanity."""
+    # Check if the input contains profanity
+    if profanity.contains_profanity(user_input):
+        # Censor the profanity in the text
+        return profanity.censor(user_input), True  # Censored text and flag as profane
+    return user_input, False  # Return clean input
+
 def handle_user_input(flow, knowledge_base):
     """Handle user input, run the flow, and display the response."""
     if prompt := st.chat_input("What is up?"):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        st.session_state.chat_history.append({"role": "user", "content": prompt})
+        # Moderate input for profanity
+        cleaned_prompt, is_profane = moderate_user_input(prompt)
 
+        # Add the cleaned or original input to the session state
+        st.session_state.messages.append({"role": "user", "content": cleaned_prompt})
+        st.session_state.chat_history.append({"role": "user", "content": cleaned_prompt})
+
+        # Show the original or censored input
         with st.chat_message("user"):
-            st.markdown(prompt)
+            st.markdown(cleaned_prompt)
+
+        if is_profane:
+            st.warning("Your input contained inappropriate language and has been censored.")
 
         # Check if the user input relates to the knowledge base
-        response = search_knowledge_base(knowledge_base, prompt)
+        response = search_knowledge_base(knowledge_base, cleaned_prompt)
 
         if not response:
             # If no response from the knowledge base, augment the OpenAI API request with knowledge base context
@@ -100,7 +120,7 @@ def handle_user_input(flow, knowledge_base):
             government_context = " ".join([f"{k}: {v}" for k, v in knowledge_base["government_services"].items()])
 
             # Build the prompt with knowledge base data as context
-            final_prompt = f"Here is relevant information about utilities and government services in Atlanta:\nUtilities:\n{utilities_context}\nGovernment Services:\n{government_context}\nUser question: {prompt}"
+            final_prompt = f"Here is relevant information about utilities and government services in Atlanta:\nUtilities:\n{utilities_context}\nGovernment Services:\n{government_context}\nUser question: {cleaned_prompt}"
 
             # Run the OpenAI API using the augmented prompt
             loop = asyncio.get_event_loop()
