@@ -1,0 +1,59 @@
+- Piedmont Park: 30309
+  One of Atlanta’s largest parks, ideal for picnics, walking, and events like the Atlanta Jazz Festival.
+
+- Georgia Aquarium: 30313
+  One of the largest aquariums in the world, featuring whale sharks, manta rays, and various aquatic exhibits.
+
+- World of Coca-Cola: 30313
+  A museum dedicated to the history of Coca-Cola, featuring interactive exhibits and memorabilia.
+
+- Centennial Olympic Park: 30313
+  Built for the 1996 Summer Olympics, it features fountains, green spaces, and regular events.
+
+- Fox Theatre: 30308
+  An iconic performing arts venue known for its classic architecture and Broadway performances.
+
+- The BeltLine (Eastside Trail): 30312
+  A multi-use trail connecting many of Atlanta's neighborhoods, popular for walking, biking, and outdoor events.
+
+- Martin Luther King Jr. National Historical Park: 30312
+  The historical site includes MLK Jr.'s childhood home, church, and final resting place.
+
+- High Museum of Art: 30309
+  A leading art museum featuring classic and contemporary art, as well as touring exhibitions.
+
+- Atlanta Botanical Garden: 30309
+  A 30-acre botanical garden adjacent to Piedmont Park, showcasing themed gardens and a conservatory.
+
+- Zoo Atlanta: 30315
+  A top-rated zoo featuring giant pandas, gorillas, and a variety of wildlife exhibits.
+
+- Mercedes-Benz Stadium: 30313
+  Home to the Atlanta Falcons (NFL) and Atlanta United FC (MLS), featuring a retractable roof and unique architecture.
+
+- Truist Park (Atlanta Braves): 30339
+  The home stadium of the Atlanta Braves, surrounded by The Battery, a mixed-use development.
+
+- Atlanta History Center: 30305
+  A museum and research center dedicated to Atlanta's history, featuring exhibits, gardens, and historic homes.
+
+- State Farm Arena (Atlanta Hawks): 30303
+  An indoor arena in downtown Atlanta, home to the NBA’s Atlanta Hawks and various events.
+
+- Stone Mountain Park: 30087
+  A large park featuring hiking trails, a carving of Confederate leaders, and a cable car to the summit.
+
+- Ponce City Market: 30308
+  A mixed-use development housed in a historic Sears building, featuring shops, restaurants, and offices.
+
+- Swan House at the Atlanta History Center: 30305
+  A historic mansion located at the Atlanta History Center, offering tours and event spaces.
+
+- Oakland Cemetery: 30312
+  Atlanta’s oldest cemetery, the final resting place of famous Atlantans like Margaret Mitchell.
+
+- College Football Hall of Fame: 30313
+  A museum celebrating the history of college football with interactive exhibits.
+
+- The Carter Center: 30307
+  A center dedicated to advancing human rights and alleviating human suffering, founded by former President Jimmy Carter.

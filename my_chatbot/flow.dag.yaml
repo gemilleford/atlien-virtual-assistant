@@ -17,14 +17,14 @@ nodes:
   type: llm
   source:
     type: code
-    path: chat.jinja2
+    path: ./chat.jinja2  # Ensure this is the correct relative path to your jinja2 template
   inputs:
     deployment_name: gpt-35-turbo
     max_tokens: '256'
     temperature: '0.7'
     chat_history: ${inputs.chat_history}
     question: ${inputs.question}
-  api: chat
-  connection: open_ai_connection
+  api: chat  # Ensure you're using the chat API and not the Completion API
+  connection: open_ai_connection  # Ensure your OpenAI connection is valid
 environment:
-  python_requirements_txt: requirements.txt
+  python_requirements_txt: requirements.txt  # Ensure all dependencies are listed in this file

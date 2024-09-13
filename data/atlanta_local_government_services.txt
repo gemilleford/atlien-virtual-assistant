@@ -1,0 +1,31 @@
+
+Local Government and Services - Atlanta Knowledge Base
+
+City Services and Utilities Setup:
+   - Water Services: Managed by the Department of Watershed Management. Include information on how to set up water services, billing inquiries, and common issues.
+     Website: https://www.atlantawatershed.org
+   - Electricity: Georgia Power is the primary electricity provider. Info on setting up an account, reporting outages, and paying bills.
+     Website: https://www.georgiapower.com
+   - Natural Gas: Providers like Atlanta Gas Light, Scana, and Gas South. Information on setting up service and the deregulated market.
+     Website: https://www.atlantagaslight.com
+   - Trash and Recycling: Details on weekly pickup schedules, recycling programs, bulk trash removal, and hazardous waste disposal.
+     Website: https://www.atlantaga.gov/government/departments/public-works
+   - Internet and Cable: Providers like Xfinity, AT&T, and Google Fiber. Info on comparing plans, setting up service, and availability by area.
+
+Government Structure:
+   - Mayor’s Office: Overview of the mayor’s role and key priorities. Link to the current mayor’s office website for recent announcements and ongoing projects.
+     Website: https://www.atlantaga.gov/government/mayor-s-office
+   - City Council: Structure of the Atlanta City Council, their roles, and how to contact your district’s council member.
+     Website: https://citycouncil.atlantaga.gov
+   - Neighborhood Planning Units (NPUs): Citizen advisory councils that make recommendations on zoning, land use, and other issues. Info on how to find your NPU and participate in meetings.
+     Website: https://www.atlantaga.gov/government/departments/city-planning/neighborhood-planning-unit-npu
+
+Voter Information:
+   - Voter Registration: How to register to vote in Atlanta (online, by mail, or in person).
+     Website: https://www.mvp.sos.ga.gov
+   - Polling Locations: Info on how to find polling places by ZIP code, early voting locations, and Election Day details.
+   - Absentee and Mail-in Voting: Guide on how to request an absentee ballot and key deadlines.
+   - City Council Elections: Info on upcoming elections, candidate profiles, and key dates.
+
+Safety and Law Enforcement:
+   - Atlanta Police Department (APD): Contact info for precincts by neighborhood, including how to file a report and crime prevention tips.
