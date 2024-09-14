@@ -1,2 +1,5 @@
 streamlit
 openai
+nest_asyncio
+better-profanity
+promptflow
