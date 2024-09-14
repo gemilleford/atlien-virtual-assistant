@@ -1,6 +1,10 @@
+Here’s how **Prompt Engineering and Natural Language Processing (NLP)** can be incorporated into the **Responsible AI** section:
+
+---
+
 ### **Responsible AI in ATLien Assistant**
 
-In AI-powered applications, ensuring that the system behaves responsibly is key to building user trust, protecting brand integrity, and maintaining legal and ethical standards. The most important aspect you will learn from this workshop is how to integrate **Responsible AI** into your app by focusing on **Content Moderation**, **Bias and Fairness**, and **Transparency**.
+In AI-powered applications, ensuring that the system behaves responsibly is key to building user trust, protecting brand integrity, and maintaining legal and ethical standards. The most important aspect you will learn from this workshop is how to integrate **Responsible AI** into your app by focusing on **Content Moderation**, **Bias and Fairness**, **Transparency**, and **Prompt Engineering**.
 
 These practices ensure your AI assistant provides helpful, appropriate, and fair responses to users while minimizing the risks of harmful or biased outputs.
 
@@ -147,8 +151,30 @@ def check_for_recency(user_query):
 
 ---
 
+### **4. Prompt Engineering and Natural Language Processing**
+
+A deeper understanding of **Prompt Engineering** and **Natural Language Processing (NLP)** is vital to crafting meaningful, accurate, and useful AI responses. By leveraging prompt engineering, you can control the output of AI models, especially when trying to mitigate bias, create brand-specific responses, or provide consistent answers.
+
+#### **Why Prompt Engineering Matters**:
+- **Control Over Responses**: Well-crafted prompts guide the AI to deliver more accurate and relevant responses.
+- **Consistency**: Structured prompts ensure that the AI assistant’s tone, style, and quality of responses remain consistent.
+- **Mitigating Risks**: Proper prompt engineering can prevent harmful or biased outputs by guiding the AI toward fair, neutral answers.
+
+#### **Approach**: Teach participants how to design and iterate on prompts to extract the most useful and relevant information from the AI model.
+
+Example of a prompt to handle general user queries:
+
+```python
+def generate_prompt(user_query, knowledge_base_context):
+    """Create a structured prompt to guide AI responses."""
+    prompt = f"You are ATLien Assistant, an AI designed to help people navigate Atlanta. Here's some knowledge base information: {knowledge_base_context}. Now, answer the following user question: {user_query}"
+    return prompt
+```
+
+---
+
 ### **Conclusion:**
 
-These Responsible AI practices—**Content Moderation**, **Bias and Fairness**, and **Transparency**—are critical to ensuring that your **ATLien Assistant** provides accurate, respectful, and trustworthy interactions with users. By applying these principles, you will not only enhance the user experience but also protect your brand and meet ethical and legal standards in AI development.
+These Responsible AI practices—**Content Moderation**, **Bias and Fairness**, **Transparency**, and **Prompt Engineering**—are critical to ensuring that your **ATLien Assistant** provides accurate, respectful, and trustworthy interactions with users. By applying these principles, you will not only enhance the user experience but also protect your brand and meet ethical and legal standards in AI development.
 
-By integrating the provided code examples, you'll create a robust, responsible AI system that prioritizes ethical interaction, fairness, and user transparency.
+By integrating the provided code examples, you'll create a robust, responsible AI system that prioritizes ethical interaction, fairness, transparency, and prompt engineering for high-quality results.
