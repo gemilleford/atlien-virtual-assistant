@@ -1,7 +1,3 @@
-Here’s how **Prompt Engineering and Natural Language Processing (NLP)** can be incorporated into the **Responsible AI** section:
-
----
-
 ### **Responsible AI in ATLien Assistant**
 
 In AI-powered applications, ensuring that the system behaves responsibly is key to building user trust, protecting brand integrity, and maintaining legal and ethical standards. The most important aspect you will learn from this workshop is how to integrate **Responsible AI** into your app by focusing on **Content Moderation**, **Bias and Fairness**, **Transparency**, and **Prompt Engineering**.
