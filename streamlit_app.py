@@ -1,9 +1,8 @@
 import streamlit as st
-import asyncio
 import os
+import httpx
 import nest_asyncio
-from promptflow.core import AsyncFlow
-from better_profanity import profanity  # Importing profanity filter
+from better_profanity import profanity
 
 # Apply nest_asyncio to allow nested event loops
 nest_asyncio.apply()
@@ -13,14 +12,13 @@ profanity.load_censor_words()
 
 # Load and parse the knowledge base (all files in the 'data' directory)
 def load_knowledge_base(directory_path):
-    """Load the knowledge base from all text files in the specified directory."""
+    """Load the knowledge base from the provided text files."""
     knowledge_base = {
         "landmarks": {},
         "government_services": {},
         "utilities": {}
     }
-    
-    # Loop through all files in the data directory
+
     for filename in os.listdir(directory_path):
         file_path = os.path.join(directory_path, filename)
         
@@ -31,8 +29,8 @@ def load_knowledge_base(directory_path):
                         if ": " in line:
                             item, value = line.split(": ")
                             item, value = item.strip(), value.strip()
-                            
-                            # Categorize based on keywords
+
+                            # Categorize based on keywords in the filenames
                             if "landmark" in filename:
                                 knowledge_base["landmarks"][item] = value
                             elif "government" in filename:
@@ -46,17 +44,18 @@ def load_knowledge_base(directory_path):
     
     return knowledge_base
 
+# Search the knowledge base for information
 def search_knowledge_base(knowledge_base, query):
     """Search for a match in the knowledge base (landmarks, government services, utilities)."""
     query_lower = query.lower()
 
-    # Exact match search
+    # Search each category for a match
     for category, items in knowledge_base.items():
         for item, value in items.items():
             if query_lower in item.lower():
                 return f"{item} ({category.capitalize()}) is located in: {value}."
 
-    # Broad search based on keywords
+    # If no direct match is found, check for utilities based on keywords
     if "water" in query_lower:
         return knowledge_base["utilities"].get("Water Services", None)
     if "electricity" in query_lower or "power" in query_lower:
@@ -66,95 +65,101 @@ def search_knowledge_base(knowledge_base, query):
     if "trash" in query_lower or "recycling" in query_lower:
         return knowledge_base["utilities"].get("Trash and Recycling", None)
 
-    return None
+    return None  # No match found
 
-async def run_flow(flow, prompt):
-    """Run the flow asynchronously and return the final response."""
-    result = await flow(
-        chat_history=st.session_state.chat_history,
-        question=prompt
-    )
+# Fetch response from Ollama if the knowledge base doesn't have the answer
+def fetch_from_ollama(prompt, knowledge_base):
+    """Send a request to the local Ollama instance running the Phi-3 model."""
+    url = "http://localhost:11434/api/chat"
 
-    # Collect the response from the async generator or result
-    response = ""
-    if isinstance(result['answer'], str):
-        response = result['answer']
-    elif isinstance(result['answer'], list):
-        response = ''.join(result['answer'])
-    else:
-        async for res in result['answer']:
-            response += res
-    return response
+    # Prepare the context from the knowledge base to include in the prompt
+    utilities_context = " ".join([f"{k}: {v}" for k, v in knowledge_base["utilities"].items()])
+    government_context = " ".join([f"{k}: {v}" for k, v in knowledge_base["government_services"].items()])
 
-def moderate_user_input(user_input):
-    """Moderate input for profanity using better-profanity."""
-    # Check if the input contains profanity
-    if profanity.contains_profanity(user_input):
-        # Censor the profanity in the text
-        return profanity.censor(user_input), True  # Censored text and flag as profane
-    return user_input, False  # Return clean input
+    # Augment the prompt with context from the knowledge base
+    full_prompt = f"""
+    Here is relevant information about utilities and government services in Atlanta:
+    Utilities:
+    {utilities_context}
 
-def handle_user_input(flow, knowledge_base):
-    """Handle user input, run the flow, and display the response."""
-    if prompt := st.chat_input("What is up?"):
-        # Moderate input for profanity
-        cleaned_prompt, is_profane = moderate_user_input(prompt)
+    Government Services:
+    {government_context}
 
-        # Add the cleaned or original input to the session state
-        st.session_state.messages.append({"role": "user", "content": cleaned_prompt})
-        st.session_state.chat_history.append({"role": "user", "content": cleaned_prompt})
+    User question: {prompt}
+    """
 
-        # Show the original or censored input
+    payload = {
+        "model": "phi3",
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": full_prompt}
+        ],
+        "stream": False
+    }
+
+    try:
+        response = httpx.post(url, json=payload, timeout=300.0)  # Max out the timeout to 300 seconds
+        response.raise_for_status()
+
+        # Parse the entire response in one go rather than line-by-line
+        try:
+            json_response = response.json()
+
+            # Check if the response has content
+            if "message" in json_response and "content" in json_response["message"]:
+                return json_response["message"]["content"]
+            else:
+                return "No response content received."
+
+        except ValueError as e:
+            st.error(f"Error parsing JSON response: {e}")
+            return "Error processing the response from Ollama."
+
+    except httpx.RequestError as e:
+        st.error(f"An error occurred while making a request to Ollama: {e}")
+        return "Error communicating with the local Ollama instance."
+    except Exception as e:
+        st.error(f"An unexpected error occurred: {e}")
+        return "Unexpected error while fetching response."
+
+# Handle user input
+def handle_user_input(knowledge_base):
+    """Handle user input, first check the knowledge base, then Ollama if necessary."""
+    # Input field for user queries
+    user_input = st.chat_input("Ask me something about Atlanta:")
+
+    # Process the input when the user submits
+    if user_input:
+        # Display user input immediately before fetching response
+        st.session_state.messages.append({"role": "user", "content": user_input})
         with st.chat_message("user"):
-            st.markdown(cleaned_prompt)
-
-        if is_profane:
-            st.warning("Your input contained inappropriate language and has been censored.")
+            st.markdown(user_input)
 
         # Check if the user input relates to the knowledge base
-        response = search_knowledge_base(knowledge_base, cleaned_prompt)
+        response = search_knowledge_base(knowledge_base, user_input)
 
-        if not response:
-            # If no response from the knowledge base, augment the OpenAI API request with knowledge base context
-            utilities_context = " ".join([f"{k}: {v}" for k, v in knowledge_base["utilities"].items()])
-            government_context = " ".join([f"{k}: {v}" for k, v in knowledge_base["government_services"].items()])
-
-            # Build the prompt with knowledge base data as context
-            final_prompt = f"Here is relevant information about utilities and government services in Atlanta:\nUtilities:\n{utilities_context}\nGovernment Services:\n{government_context}\nUser question: {cleaned_prompt}"
-
-            # Run the OpenAI API using the augmented prompt
-            loop = asyncio.get_event_loop()
-            final_result = loop.run_until_complete(run_flow(flow, final_prompt))
-
-            # Display the assistant's response
-            if final_result:
-                st.session_state.messages.append({"role": "assistant", "content": final_result})
-                st.session_state.chat_history.append({"role": "assistant", "content": final_result})
-                with st.chat_message("assistant"):
-                    st.markdown(final_result)
-            else:
-                st.error("No response received from the flow.")
-        else:
-            # If the knowledge base had a result, display it
+        if response:
+            # Respond from the knowledge base
             st.session_state.messages.append({"role": "assistant", "content": response})
-            st.session_state.chat_history.append({"role": "assistant", "content": response})
+            with st.chat_message("assistant"):
+                st.markdown(response)
+        else:
+            # If no response from the knowledge base, call Ollama
+            response = fetch_from_ollama(user_input, knowledge_base)
+            st.session_state.messages.append({"role": "assistant", "content": response})
             with st.chat_message("assistant"):
                 st.markdown(response)
 
+# Display the app title and description
 def display_title_and_description():
     """Display the app title and description."""
     st.title("🍑 ATLien Assistant")
     st.write(
         "Welcome to ATLien Assistant, an AI-powered virtual assistant designed "
         "to help newcomers and residents navigate the vibrant city of Atlanta. "
-        "Whether you're searching for the best neighborhoods, local hotspots, "
-        "or upcoming events, ATLien Assistant provides personalized insights "
-        "and real-time information. With deep knowledge of the city’s culture, "
-        "lifestyle, and opportunities, this assistant will guide you through "
-        "everything from finding great restaurants to understanding transportation "
-        "options—all at your fingertips."
     )
 
+# Initialize session state
 def initialize_session_state():
     """Initialize session state variables for messages, chat history, and first-time introduction."""
     if "messages" not in st.session_state:
@@ -164,8 +169,9 @@ def initialize_session_state():
     if "introduced" not in st.session_state:
         st.session_state.introduced = False  # Track whether the assistant has introduced itself
 
+# Introduce the assistant
 def introduce_assistant():
-    """Introduce the ATLien Assistant with a focus on helping people transition to life in Atlanta."""
+    """Introduce the ATLien Assistant."""
     if not st.session_state.introduced:
         intro_message = (
             "Hi, I'm ATLien Assistant! I'm here to provide you with the resources and information you need to quickly settle into life in Atlanta. "
@@ -176,37 +182,29 @@ def introduce_assistant():
         st.session_state.chat_history.append({"role": "assistant", "content": intro_message})
         st.session_state.introduced = True  # Set flag to avoid repeated introductions
 
+# Display chat history
 def display_chat_messages():
     """Display existing chat messages stored in session state."""
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
+# Main function to run the ATLien Assistant app
 def main():
     """Main function to run the ATLien Assistant app."""
     display_title_and_description()
+    initialize_session_state()
 
-    openai_api_key = st.text_input("OpenAI API Key", type="password")
-    if not openai_api_key:
-        st.info("Please add your OpenAI API key to continue.", icon="🗝️")
-    else:
-        os.environ["OPENAI_API_KEY"] = openai_api_key
-        try:
-            flow = AsyncFlow.load(source="./my_chatbot/flow.dag.yaml")
-            initialize_session_state()
+    # Load the knowledge base from the 'data' directory
+    knowledge_base = load_knowledge_base("./data/")
 
-            # Load the knowledge base from the 'data' directory
-            knowledge_base = load_knowledge_base("./data/")
+    # Ensure the assistant introduces itself only once
+    if not st.session_state.messages:
+        introduce_assistant()
 
-            # Ensure the assistant introduces itself only once
-            if not st.session_state.messages:
-                introduce_assistant()
-
-            # Display chat history and handle user input
-            display_chat_messages()
-            handle_user_input(flow, knowledge_base)
-        except Exception as e:
-            st.error(f"An error occurred while loading the flow: {e}")
+    # Display chat history and handle user input
+    display_chat_messages()
+    handle_user_input(knowledge_base)
 
 if __name__ == "__main__":
     main()

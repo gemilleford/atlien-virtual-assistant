@@ -3,3 +3,5 @@ openai
 nest_asyncio
 better-profanity
 promptflow
+transformers
+torch
