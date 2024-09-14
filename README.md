@@ -1,7 +1,3 @@
-Here’s the updated README with **Using a Multi-Model Approach for Better Results** as point 5:
-
----
-
 # Practical AI Web Development with Streamlit, Promptflow, and PHI-3
 
 ## Welcome to the Practical AI Web Development Workshop, where we’ll guide you step-by-step through building a real-world AI-powered web application. Today’s session focuses on not just theory but hands-on application — you’ll leave this workshop with a fully functional AI solution that can be deployed in a real-world scenario.
