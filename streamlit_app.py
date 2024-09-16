@@ -3,6 +3,7 @@ import os
 import httpx
 import nest_asyncio
 from better_profanity import profanity
+from utils.restaurants import *
 
 # Apply nest_asyncio to allow nested event loops
 nest_asyncio.apply()
@@ -16,8 +17,11 @@ def load_knowledge_base(directory_path):
     knowledge_base = {
         "landmarks": {},
         "government_services": {},
-        "utilities": {}
+        "utilities": {},
+        "restaurants": {}
     }
+
+    knowledge_base = load_restaurants(knowledge_base)
 
     for filename in os.listdir(directory_path):
         file_path = os.path.join(directory_path, filename)
@@ -64,6 +68,8 @@ def search_knowledge_base(knowledge_base, query):
         return knowledge_base["utilities"].get("Natural Gas", None)
     if "trash" in query_lower or "recycling" in query_lower:
         return knowledge_base["utilities"].get("Trash and Recycling", None)
+    if "restaurant" in query_lower:
+        return present(knowledge_base["restaurants"], query)
 
     return None  # No match found
 
