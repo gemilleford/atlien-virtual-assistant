@@ -1,74 +1,11 @@
 import streamlit as st
-import os
 import httpx
 import nest_asyncio
-from utils.restaurants import *
+from utils.knowledge_base import *
 from utils.moderator import *
 
 # Apply nest_asyncio to allow nested event loops
 nest_asyncio.apply()
-
-# Load and parse the knowledge base (all files in the 'data' directory)
-def load_knowledge_base(directory_path):
-    """Load the knowledge base from the provided text files."""
-    knowledge_base = {
-        "landmarks": {},
-        "government_services": {},
-        "utilities": {},
-        "restaurants": {}
-    }
-
-    knowledge_base = load_restaurants(knowledge_base)
-
-    for filename in os.listdir(directory_path):
-        file_path = os.path.join(directory_path, filename)
-        
-        if filename.endswith(".txt"):
-            try:
-                with open(file_path, 'r') as f:
-                    for line in f.readlines():
-                        if ": " in line:
-                            item, value = line.split(": ")
-                            item, value = item.strip(), value.strip()
-
-                            # Categorize based on keywords in the filenames
-                            if "landmark" in filename:
-                                knowledge_base["landmarks"][item] = value
-                            elif "government" in filename:
-                                knowledge_base["government_services"][item] = value
-                            elif any(word in item.lower() for word in ["water", "electricity", "natural gas", "trash", "recycling"]):
-                                knowledge_base["utilities"][item] = value
-            except FileNotFoundError:
-                st.error(f"Knowledge base file {file_path} not found.")
-            except Exception as e:
-                st.error(f"An error occurred while processing {file_path}: {e}")
-    
-    return knowledge_base
-
-# Search the knowledge base for information
-def search_knowledge_base(knowledge_base, query):
-    """Search for a match in the knowledge base (landmarks, government services, utilities)."""
-    query_lower = query.lower()
-
-    # Search each category for a match
-    for category, items in knowledge_base.items():
-        for item, value in items.items():
-            if query_lower in item.lower():
-                return f"{item} ({category.capitalize()}) is located in: {value}."
-
-    # If no direct match is found, check for utilities based on keywords
-    if "water" in query_lower:
-        return knowledge_base["utilities"].get("Water Services", None)
-    if "electricity" in query_lower or "power" in query_lower:
-        return knowledge_base["utilities"].get("Electricity", None)
-    if "natural gas" in query_lower:
-        return knowledge_base["utilities"].get("Natural Gas", None)
-    if "trash" in query_lower or "recycling" in query_lower:
-        return knowledge_base["utilities"].get("Trash and Recycling", None)
-    if "restaurant" in query_lower:
-        return present(knowledge_base["restaurants"], query)
-
-    return None  # No match found
 
 # Fetch response from Ollama if the knowledge base doesn't have the answer
 def fetch_from_ollama(prompt, knowledge_base):
