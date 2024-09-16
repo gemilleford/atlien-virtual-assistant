@@ -75,6 +75,12 @@ def handle_user_input(knowledge_base):
         st.session_state.messages.append({"role": "user", "content": cleaned_and_neutralized_input})
         with st.chat_message("user"):
             st.markdown(cleaned_and_neutralized_input)
+        
+        response_for_sensitive_topic = check_for_sensitive_topic(cleaned_and_neutralized_input)
+        if response_for_sensitive_topic:
+            st.session_state.messages.append({"role": "assistant", "content": response_for_sensitive_topic})
+            with st.chat_message("assistant"):
+                st.markdown(response_for_sensitive_topic)
 
         # Check if the user input relates to the knowledge base
         response = search_knowledge_base(knowledge_base, cleaned_and_neutralized_input)
