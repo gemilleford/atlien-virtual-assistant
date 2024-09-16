@@ -2,14 +2,11 @@ import streamlit as st
 import os
 import httpx
 import nest_asyncio
-from better_profanity import profanity
 from utils.restaurants import *
+from utils.moderator import *
 
 # Apply nest_asyncio to allow nested event loops
 nest_asyncio.apply()
-
-# Initialize the better-profanity filter
-profanity.load_censor_words()
 
 # Load and parse the knowledge base (all files in the 'data' directory)
 def load_knowledge_base(directory_path):
@@ -136,13 +133,14 @@ def handle_user_input(knowledge_base):
 
     # Process the input when the user submits
     if user_input:
+        cleaned_and_neutralized_input = moderate(user_input)
         # Display user input immediately before fetching response
-        st.session_state.messages.append({"role": "user", "content": user_input})
+        st.session_state.messages.append({"role": "user", "content": cleaned_and_neutralized_input})
         with st.chat_message("user"):
-            st.markdown(user_input)
+            st.markdown(cleaned_and_neutralized_input)
 
         # Check if the user input relates to the knowledge base
-        response = search_knowledge_base(knowledge_base, user_input)
+        response = search_knowledge_base(knowledge_base, cleaned_and_neutralized_input)
 
         if response:
             # Respond from the knowledge base
