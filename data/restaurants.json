@@ -1,0 +1,30 @@
+[
+    {
+        "name": "dat_fire_jerk",
+        "type": ["jerk chicken", "chicken", "carribean"],
+        "description": "Dat Fire Jerk is one of those downhome places that don’t look like much on the outside, but on the grill, it’s legit.",
+        "address": "226 Northside Dr SW, Atlanta, GA 30313",
+        "phone": "(404) 254-4494"
+    },
+    {
+        "name": "caribbean_delights",
+        "type": ["jerk chicken", "chicken", "carribean"],
+        "description": "Caribbean Delights is a small counter-serve restaurant that packs a powerful punch when it comes to its culinary might. The restaurant serves Caribbean eats & vegetarian options.",
+        "address": "576 Lee St SW B, Atlanta, GA 30310",
+        "phone": null
+    },
+    {
+        "name": "conch_heaven",
+        "type": ["jerk chicken", "chicken", "carribean"],
+        "description": "Conch Heaven, in the Peachtree Pavilion Shopping Center, has some of the most loyal customers in the area when it comes to Caribbean food.",
+        "address": "6035 Peachtree Blvd, Atlanta, GA 30341",
+        "phone": null
+    },
+    {
+        "name": "scotch_bonnett_jamaican_restaurant",
+        "type": ["jerk chicken", "chicken", "carribean"],
+        "description": "Scotch Bonnett is well known for its fire jerk chicken on the south side of Atlanta. The restaurant gives you a nice portion, too.",
+        "address": "4454 Campbellton Rd SW, Atlanta, GA 30331",
+        "phone": null
+    }
+]
