@@ -137,7 +137,7 @@ def main():
     initialize_session_state()
 
     # Load the knowledge base from the 'data' directory
-    knowledge_base = load_knowledge_base("./data/")
+    knowledge_base = load_knowledge_base()
 
     # Ensure the assistant introduces itself only once
     if not st.session_state.messages:

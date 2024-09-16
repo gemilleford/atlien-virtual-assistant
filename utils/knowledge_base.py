@@ -3,7 +3,7 @@ import os
 import streamlit as st
 
 # Load and parse the knowledge base (all files in the 'data' directory)
-def load_knowledge_base(directory_path):
+def load_knowledge_base():
     """Load the knowledge base from the provided text files."""
     knowledge_base = {
         "landmarks": {},
@@ -12,11 +12,16 @@ def load_knowledge_base(directory_path):
         "restaurants": {}
     }
 
-    knowledge_base = load_restaurants(knowledge_base)
+    knowledge_base_w_restaurants = load_restaurants(knowledge_base)
 
-    for filename in os.listdir(directory_path):
-        file_path = os.path.join(directory_path, filename)
-        
+    full_knowledge_base = load_text_data(knowledge_base_w_restaurants)
+
+    return full_knowledge_base
+
+def load_text_data(knowledge_base):
+    for filename in os.listdir("data/"):
+        file_path = os.path.join("data/", filename)
+
         if filename.endswith(".txt"):
             try:
                 with open(file_path, 'r') as f:
@@ -36,8 +41,9 @@ def load_knowledge_base(directory_path):
                 st.error(f"Knowledge base file {file_path} not found.")
             except Exception as e:
                 st.error(f"An error occurred while processing {file_path}: {e}")
-    
+
     return knowledge_base
+
 
 # Search the knowledge base for information
 def search_knowledge_base(knowledge_base, query):
@@ -50,15 +56,13 @@ def search_knowledge_base(knowledge_base, query):
             if query_lower in item.lower():
                 return f"{item} ({category.capitalize()}) is located in: {value}."
 
-    # If no direct match is found, check for utilities based on keywords
-    if "water" in query_lower:
-        return knowledge_base["utilities"].get("Water Services", None)
-    if "electricity" in query_lower or "power" in query_lower:
-        return knowledge_base["utilities"].get("Electricity", None)
-    if "natural gas" in query_lower:
-        return knowledge_base["utilities"].get("Natural Gas", None)
-    if "trash" in query_lower or "recycling" in query_lower:
-        return knowledge_base["utilities"].get("Trash and Recycling", None)
+    # If no direct match is found, search for utilities based on keywords
+    for keyword in ["water", "electricity", "natural gas", "trash", "recycling"]:
+        if keyword in query_lower:
+            utility = knowledge_base["utilities"].get(keyword.capitalize(), None)
+            if utility:
+                return utility
+
     if "restaurant" in query_lower:
         return present(knowledge_base["restaurants"], query)
 
